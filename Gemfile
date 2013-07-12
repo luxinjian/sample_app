@@ -2,14 +2,15 @@ source 'http://ruby.taobao.org/'
 
 gem 'rails'
 gem 'bootstrap-sass', '2.0.0'
+gem 'bcrypt-ruby', '3.0.1'
 
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
 
-group :development, :test do
+group :development do
   gem 'sqlite3'
   gem 'rspec-rails'
-  gem 'guard-rspec'
+  gem 'annotate'
 end
 
 
@@ -28,6 +29,7 @@ group :test do
   gem 'capybara', '1.1.2'
   gem 'rb-inotify'
   gem 'libnotify'
+  gem 'guard-rspec'
   gem 'guard-spork'
   gem 'spork'
 end
