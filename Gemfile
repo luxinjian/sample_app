@@ -1,7 +1,7 @@
 source 'http://ruby.taobao.org/'
 
 gem 'rails'
-gem 'bootstrap-sass', '2.0.0'
+gem 'bootstrap-sass'
 gem 'bcrypt-ruby', '3.0.1'
 
 # Bundle edge Rails instead:

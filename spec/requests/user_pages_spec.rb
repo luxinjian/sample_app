@@ -30,8 +30,12 @@ describe "UserPages" do
 
       it "should have an success message" do
         click_button "Create my account"
-        #flash[:success].should =~ /welcome to the sample app/i
         page.should have_selector('div.alert', text: "Welcome to the Sample App")
+      end
+
+      it "should have a sign out link" do
+        click_button "Create my account"
+        page.should have_link('Sign out', href: signout_path)
       end
     end
   end
