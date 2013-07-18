@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-  before_filter :signed_in_user, only: [:edit, :update, :index, :destroy]
+  before_filter :signed_in_user, only: [:edit, :update, :index, :destroy, :followers, :following]
   before_filter :already_sign_in, only: [:new, :create]
   before_filter :correct_user, only: [:edit, :update]
   before_filter :admin_user, only: :destroy
@@ -50,6 +50,20 @@ class UsersController < ApplicationController
     User.find(params[:id]).destroy
     flash[:success] = "User destroyed."
     redirect_to users_path
+  end
+
+  def followers
+    @user = User.find(params[:id])
+    @title = "Followers"
+    @users = @user.followers.paginate(page: params[:page])
+    render 'show_follow'
+  end
+
+  def following
+    @user = User.find(params[:id])
+    @title = "Following"
+    @users = @user.followed_users.paginate(page: params[:page])
+    render 'show_follow'
   end
 
   private

@@ -29,6 +29,13 @@ describe User do
   it { should respond_to(:authenticate) }
   it { should respond_to(:microposts) }
   it { should respond_to(:feed) }
+  it { should respond_to(:relationships) }
+  it { should respond_to(:reverse_relationships) }
+  it { should respond_to(:followed_users) }
+  it { should respond_to(:followers) }
+  it { should respond_to(:follow!) }
+  it { should respond_to(:following?) }
+  it { should respond_to(:unfollow!) }
 
   it { should be_valid }
   it { should_not be_admin }
@@ -152,13 +159,52 @@ describe User do
 
   describe "feed" do
     before { @user.save }
-    let(:mp) { FactoryGirl.create(:micropost, user: @user) }
-    let(:mp_with_other_user) do
-      FactoryGirl.create(:micropost, user: FactoryGirl.create(:user))
+    let(:followed) { FactoryGirl.create(:user) }
+    let(:mp_by_user) { FactoryGirl.create(:micropost, user: @user) }
+    let(:mp_by_followed_user) { FactoryGirl.create(:micropost, user: followed) }
+
+    its(:feed) { should include(mp_by_user) }
+    its(:feed) { should_not include(mp_by_followed_user) }
+
+    describe "after follow followed user" do
+      before { @user.follow!(followed) }
+      its(:feed) { should include(mp_by_followed_user) }
+    end
+  end
+
+  describe "followed_users" do
+    let(:followed) { FactoryGirl.create(:user) }
+    before do
+      @user.save
+      @user.follow!(followed)
     end
 
-      its(:feed) { should include(mp) }
+    it { should be_following(followed) }
+    its(:followed_users) { should include(followed) }
 
-      its(:feed) { should_not include(mp_with_other_user) }
+    describe "after unfollow" do
+      before { @user.unfollow!(followed) }
+
+      it { should_not be_following(followed) }
+    end
+  end
+
+  describe "followers" do
+    let(:follower) { FactoryGirl.create(:user) }
+    before do
+      @user.save
+      follower.follow!(@user)
+    end
+
+    it "should be following" do
+      follower.should be_following(@user)
+      follower.followed_users.should include(@user)
+      @user.followers.should include(follower)
+    end
+
+    describe "after unfollow" do
+      before { follower.unfollow!(@user) }
+      its(:followers) { should_not include(follower) }
+    end
   end
 end

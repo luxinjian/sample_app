@@ -40,6 +40,17 @@ describe "StaticPages" do
       describe "sidebar" do
         it { should have_selector('span', text: "3 microposts") }
       end
+
+      describe "the followers/following count" do
+        let(:other_user) { FactoryGirl.create(:user) }
+        before do
+          user.follow!(other_user)
+          visit root_path
+        end
+
+        it { should have_link('0 followers', href: followers_user_path(user)) }
+        it { should have_link('1 following', href: following_user_path(user)) }
+      end
     end
   end
 

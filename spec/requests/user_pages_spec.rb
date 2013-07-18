@@ -140,4 +140,32 @@ describe "UserPages" do
 #      it { should_not have_link('delete', href: user_path(admin)) }
 #    end
   end
+
+  describe "followers page" do
+    let(:user) { FactoryGirl.create(:user) }
+    let(:follower) { FactoryGirl.create(:user) }
+    before do
+      sign_in user
+      follower.follow!(user)
+      visit followers_user_path(user)
+    end
+
+    it { should have_selector('title', text: full_title("Followers")) }
+    it { should have_selector('h3', text: "Followers") }
+    it { should have_link(follower.name, href: user_path(follower)) }
+  end
+
+  describe "following page" do
+    let(:user) { FactoryGirl.create(:user) }
+    let(:followed) { FactoryGirl.create(:user) }
+    before do
+      sign_in user
+      user.follow!(followed)
+      visit following_user_path(user)
+    end
+
+    it { should have_selector('title', text: full_title("Following")) }
+    it { should have_selector('h3', text: "Following") }
+    it { should have_link(followed.name, href: user_path(followed)) }
+  end
 end

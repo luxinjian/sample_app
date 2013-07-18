@@ -97,6 +97,18 @@ describe "Authentication Pages" do
           end
           specify { response.should redirect_to(root_path) }
         end
+
+        describe "followers page" do
+          before { visit followers_user_path(1) }
+
+          it { should have_selector('title', text: "Sign in") }
+        end
+
+        describe "following page" do
+          before { visit following_user_path(1) }
+
+          it { should have_selector('title', text: "Sign in") }
+        end
       end
 
       describe "in the Micropost's controller" do
