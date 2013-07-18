@@ -42,11 +42,19 @@ describe "UserPages" do
 
   describe "'show' page" do
     let(:user) { FactoryGirl.create(:user) }
+    let!(:mp1) { FactoryGirl.create(:micropost, user: user, content: "jary") }
+    let!(:mp2) { FactoryGirl.create(:micropost, user: user, content: "david") }
     before { visit user_path(user) }
     subject { page }
 
     it { should have_selector('h1', text: user.name) }
     it { should have_selector('title', text: user.name) }
+
+    describe "micropost" do
+      it { should have_content(mp1.content) }
+      it { should have_content(mp2.content) }
+      it { should have_content(user.microposts.count) }
+    end
   end
 
   describe "'edit' page" do

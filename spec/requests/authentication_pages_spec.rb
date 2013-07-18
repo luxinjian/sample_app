@@ -98,6 +98,33 @@ describe "Authentication Pages" do
           specify { response.should redirect_to(root_path) }
         end
       end
+
+      describe "in the Micropost's controller" do
+
+        describe "submiting to Micropost create action" do
+          before { post microposts_path, micropost: nil }
+          specify { response.should redirect_to(signin_path) }
+        end
+
+        describe "submiting to Micropost destroy action" do
+          let(:user) { FactoryGirl.create(:user) }
+          let(:wrong_user) { FactoryGirl.create(:user) }
+          let(:micropost) { FactoryGirl.create(:micropost, user: user) }
+
+          describe "with non-sign_in user" do
+            before { delete micropost_path(micropost) }
+            specify { response.should redirect_to(signin_path) }
+          end
+
+          describe "with wrong user" do
+            before do
+              sign_in wrong_user
+              delete micropost_path(micropost)
+            end
+            specify { response.should redirect_to(root_path) }
+          end
+        end
+      end
     end
 
     describe "with sign_in user" do

@@ -15,8 +15,8 @@ describe User do
 
   before { @user = User.new(name: "Example User",
                             email: "user@example.com",
-                           password: "foobar",
-                           password_confirmation: "foobar") }
+                            password: "foobar",
+                            password_confirmation: "foobar") }
   subject { @user }
 
   it { should respond_to(:name) }
@@ -27,6 +27,8 @@ describe User do
   it { should respond_to(:remember_token) }
   it { should respond_to(:admin) }
   it { should respond_to(:authenticate) }
+  it { should respond_to(:microposts) }
+  it { should respond_to(:feed) }
 
   it { should be_valid }
   it { should_not be_admin }
@@ -124,5 +126,39 @@ describe User do
   describe "remember token" do
     before { @user.save }
     its(:remember_token) { should_not be_blank }
+  end
+
+  describe "micropost association" do
+
+    describe "micropost order" do
+
+      before { @user.save }
+      let!(:mp1) { FactoryGirl.create(:micropost, user: @user, created_at: 1.day.ago) }
+      let!(:mp2) { FactoryGirl.create(:micropost, user: @user, created_at: 1.hour.ago) }
+
+      it "should have right order" do
+        @user.microposts.should == [mp2, mp1]
+      end
+    end
+
+    it "should not exist after associated user destroyed" do
+      microposts = @user.microposts
+      @user.destroy
+      microposts.each do |m|
+        Micropost.find_by_id(m.id).should be_nil
+      end
+    end
+  end
+
+  describe "feed" do
+    before { @user.save }
+    let(:mp) { FactoryGirl.create(:micropost, user: @user) }
+    let(:mp_with_other_user) do
+      FactoryGirl.create(:micropost, user: FactoryGirl.create(:user))
+    end
+
+      its(:feed) { should include(mp) }
+
+      its(:feed) { should_not include(mp_with_other_user) }
   end
 end

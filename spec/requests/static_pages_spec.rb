@@ -17,6 +17,30 @@ describe "StaticPages" do
     it_should_behave_like "all static pages"
     it { should_not have_selector('title',
                                   text: full_title('Home')) }
+
+    describe "with sign status" do
+      let(:user) { FactoryGirl.create(:user) }
+      before do
+        3.times do
+          FactoryGirl.create(:micropost, user: user)
+        end
+        sign_in user
+        visit root_path
+      end
+
+      #I must add this line, otherwise there will get error
+      subject { page }
+
+      it "should have li tag for user's each micropost" do
+        user.feed.each do |m|
+          page.should have_selector('li', text: m.user.name)
+        end
+      end
+
+      describe "sidebar" do
+        it { should have_selector('span', text: "3 microposts") }
+      end
+    end
   end
 
   describe "'help' page" do
